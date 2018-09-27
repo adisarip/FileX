@@ -1,0 +1,259 @@
+*********************************************************************************************
+*                             AN xterm based Linux File Explorer                            *
+*********************************************************************************************
+
+Project Source Tree:
+  |__README (your a looking at this right now!!)
+  |__ src
+  |__ obj
+  |__ bin
+  |__ Makefile
+
+make clean: Clean all the object files and binaries from ./obj and ./bin directories
+make      : Builds the target "fx" --> "f"ILE E"x"PLORER.
+
+
+A typical use case: make clean; make ; ./bin/fx
+
+
+===============================
+FEATURE SET SUPPORTED BY - "fx"
+===============================
+
+WARNING !!! --> Donot re-size the terminal window while the file explorer is running.
+                This will result in malfunctioning of the application.
+
+(A) NORMAL MODE:
+----------------
+=> The File Explorer "fx" start in NORMAL mode
+=> Display the directory listing of the current folder (or input folder).
+
+    ./bin/fx
+    ./bin/fx [Directory Path]
+
+Ex:  ./bin/fx
+     ./bin/fx ../../
+     ./bin/fx ../../d_xyz/
+     ./bin/fx ~/d_xyz/
+
+=> A sample Directory listing is displayed as
+
+./                       drwxr-xr-x    aditya    staff    Sep 02 13 32    288
+../                      drwxr-xr-x    aditya    staff    Sep 02 12 04    192
+obj/                     drwxr-xr-x    aditya    staff    Sep 02 13 27    224
+bin/                     drwxr-xr-x    aditya    staff    Sep 02 13 27    128
+Makefile                 -rwxr-xr-x    aditya    staff    Sep 02 10 26    667
+README                   -rw-r--r--    aditya    staff    Sep 02 13 32    968
+.gitignore               -rw-r--r--    aditya    staff    Aug 31 18 08    180
+src/                     drwxr-xr-x    aditya    staff    Sep 02 13 29    512
+====================
+Entries: 9
+Current Dir: /Users/aditya/DevHub/pgssp/2018_Monsoon/os/ospg/assignment_1/
+====================
+
+=> The Columns correspond to -->  Entry_Name   Permissions   User   Group   Last_Modified   Size_in_bytes
+=> User can navigate the directory list using "UP" and "DOWN" arrow keys.
+=> On pressing ENTER on any directory entry will navigate the file explorer to that directory.
+=> On pressing ENTER on any file entry will open that file with the default application associated with it.
+=> Pressing BACKSPACE navigates up one level.
+=> "RIGHT" & "LEFT" arrow keys are "history keys" disabled initially at startup. Once the traversal starts, "LEFT" key navigates back to previous directory and "RIGHT" key navigates forward. "RIGHT" arrow key will work after the "LEFT" arrow key is pressed atleast once.
+=> On pressing 'h' navigates to file explorer home directory. (This will clear the history keys).
+=> Vertical Overflow is handled accordingly.
+=> On pressing 'q' exits file explorer.
+
+
+
+(B) COMMAND MODE:
+-----------------
+=> Application enters command mode on pressing ":"
+=> On pressing ESC / ENTER (without any input) switches back to Normal mode.
+=> Below are the list of commands supported in Command Mode.
+
+
+    "goto"
+    "copy"
+    "move"
+    "rename"
+    "create_file"
+    "create_dir"
+    "delete_file"
+    "delete_dir"
+    "delete"
+    "search"
+    "snapshot"
+    "clear_trash"
+
+Given below is the detailed description of the above cammands and their usage.
+
+1.
+Command: "goto"
+Minimum Args#: 1
+Description: navigates to the directory provided. Directory path can be absolute or relative.
+Usage:
+     goto d_xyz
+     goto ../
+     goto ../d_xyz
+     goto ../d_abc/
+     goto /                 (Navigates to Application Root)
+     goto ~                 (Navigates to User Home Directory)
+     goto ~/d_xyz/d_abc/
+
+2.
+Command: "copy"
+Minimum Args#: 1
+Description: Copy files or directories (recursively) to the destination folder.
+             Last argument should always be a directory, and will be considered as the destination directory.
+Usage:
+     copy <file(s)> <dir(s)> .
+     copy <file(s)> <dir(s)> ..
+     copy <file(s)> <dir(s)> ../d_xyz
+     copy <file(s)> <dir(s)> ./d_xyz
+     copy <file(s)> <dir(s)> ~
+     copy <file(s)> <dir(s)> ~/d_xyz
+
+Here <file(s)>: a list of files with their absolute or relative path(s).
+     <dir(s)>:  a list of directories to be copied (recursively) with their absolute or relative path(s).
+
+
+3.
+Command: "move"
+Minimum Args#: 2
+Description: Move files or directories (recursively) to the destination folder.
+             Last argument should always be a directory, and will be considered as the destination directory.
+Usage:
+     move <file(s)> <dir(s)> .
+     move <file(s)> <dir(s)> ..
+     move <file(s)> <dir(s)> ../d_xyz
+     move <file(s)> <dir(s)> ./d_xyz
+     move <file(s)> <dir(s)> ~
+     move <file(s)> <dir(s)> ~/d_xyz
+
+Here: <file(s)>: a list of files with their absolute or relative path(s).
+      <dir(s)>:  a list of directories to be moved (recursively) with their absolute or relative path(s).
+
+
+4.
+Command: "rename"
+Minimum Args#: 2
+Description: Renames file or folder
+Usage:
+     rename file1 file2
+     rename dir1 dir2
+
+Here: Both the arguments should either be files or directories.
+      files/directories can be provided with absolute or relative paths.
+
+
+5.
+Command: "create_file"
+Minimum Args#: 1
+Description: Creates a regular empty file(s).
+Usage:
+     create_file file1 file2 ... 
+     create_file file1 file2 ... <destination dir>
+
+Here: file(s) will be created in the destination directory provied as the last argument.
+      Default destination directory in current directory.
+      file(s) can be provided with absolute or relative paths.
+
+
+6.
+Command: "create_dir"
+Minimum Args#: 1
+Description: Creates an empty folder(s).
+Usage:
+     create_dir dir1 dir2 ... 
+     create_dir dir1 dir2 ... <destination dir>
+
+Here: folder(s) will be created in the destination directory provied as the last argument.
+      Default destination directory in current directory.
+      folder(s) can be provided with absolute or relative paths.
+
+
+7.
+Command: "delete_file"
+Minimum Args#: 1
+Description: Delete all the regular files in the argument list
+Usage:
+     delete_file file1 file2 ...
+     delete_file file1 file2 dir1 (deletes file1 and file2 only)
+
+Here: file(s) will be moved into trash folder.
+      If the file(s) already exists in trash, a new time-stamped file will be created in trash.
+      If any directories are encountered in the arguments list, they are skipped.
+      file(s) can be provided with absolute or relative paths.
+      If the current directory is trash itself - file(s) will be deleted permanently.
+
+8.
+Command: "delete_dir"
+Minimum Args#: 1
+Description: Delete all the directories in the argument list
+Usage:
+     delete_dir dir1 dir2 ...
+     delete_dir dir1 dir2 file1 (deletes dir1 and dir2 only)
+
+Here: folder(s) will be moved into trash folder.
+      If the folder(s) already exists in trash, a new time-stamped folder(s) will be created in trash.
+      If any files are encountered in the arguments list, they are skipped.
+      folder(s) can be provided with absolute or relative paths.
+      If the current directory is trash itself - folder(s) will be deleted permanently.
+
+
+9.
+Command: "delete"
+Minimum Args#: 1
+Description: Combining 7 and 8. Deletes files & folders provided in the arguments list.
+             Similar to "rm -rf" command in UNIX.
+Usage:
+     delete file1 file2 dir1 dir2 ...
+
+Here: file(s) or folder(s) will be moved into trash folder.
+      If the file(s) or folder(s) already exists in trash, a new time-stamped file(s)/folder(s) will be created in trash.
+      file(s) or folder(s) can be provided with absolute or relative paths.
+      If the current directory is trash itself - file(s)/folder(s) will be deleted permanently.
+
+
+
+10.
+Command: "search"
+Minimum Args#: 1
+Description: Will search for all the file(s)/folder(s) names provided in the argument list.
+             Search will start from current working directory.
+             Absolute/Relative paths are not supported. Only names of the file/folder should be provided.
+Usage:
+     search file1 file2 dir1 dir2 ...
+
+Here: The absolute paths of the file(s) / folder(s), if they exists in the search, will be displayed on screen.
+      Once can navigate to the respectives entries using the arrow keys (UP and DOWN)
+      Pressing ENTER on any file entry - will navigate to the folder containing the file.
+      Pressing ENTER on any folder entry - will navigate to the folder itself.
+      Pressing BACKSPACE will navigate back to the directory where the search was started.
+[NOTE]: Pressing ENTER key is handled by using the in-built utility of "/usr/bin/open" (in MAC OS). Replace it with "xdg-open" for Linux.
+
+
+11.
+Command: "snapshot"
+Minimum Args#: exactly 2
+Description: Will take a snapshot of the directory entry provided in the argument list and dump into a file.
+             Dump output will be similar to - "ls -R" output in UNIX.
+Usage:
+     snapshot <directory-path> <file-path>
+
+Here: Absolute and relative paths are supported for the dump-file and folder-name.
+
+
+
+12.
+Command: "clear_trash"
+Minimum Args#: 0
+Description: Clears the trash folder - [ ~/.fxtrash/ ]
+Usage: clear_trash
+
+
+
+
+                            ====================  THE  END  ====================
+
+
+
+
